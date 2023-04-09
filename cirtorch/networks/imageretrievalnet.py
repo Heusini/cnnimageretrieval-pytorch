@@ -277,7 +277,8 @@ def init_network(params):
 
 def extract_vectors(net, images, image_size, transform, bbxs=None, ms=[1], msp=1, print_freq=10):
     # moving network to gpu and eval mode
-    net.cuda()
+    if torch.cuda.is_available():
+        net.cuda()
     net.eval()
 
     # creating dataset loader
@@ -290,7 +291,8 @@ def extract_vectors(net, images, image_size, transform, bbxs=None, ms=[1], msp=1
     with torch.no_grad():
         vecs = torch.zeros(net.meta['outputdim'], len(images))
         for i, input in enumerate(loader):
-            input = input.cuda()
+            if torch.cuda.is_available():
+                input = input.cuda()
 
             if len(ms) == 1 and ms[0] == 1:
                 vecs[:, i] = extract_ss(net, input)
